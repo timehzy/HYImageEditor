@@ -17,6 +17,12 @@ class ImageCropboxViewController: UIViewController {
         cropView.image = UIImage(named: "demo.jpg")
     }
 
+    @IBSegueAction func showPreview(_ coder: NSCoder) -> UIViewController? {
+        let vc = ImagePreviewViewController(coder: coder)
+        vc?.image = cropView.image?.cropImage(cropView.cropbox.rect)
+        return vc
+    }
+    
     @IBAction func rawRatioTouched(_ sender: Any) {
         cropView.cropboxRatio = 0
     }
@@ -39,6 +45,5 @@ class ImageCropboxViewController: UIViewController {
     
     @IBAction func rotationRightTouched(_ sender: Any) {
         cropView.orientation = cropView.orientation.rotationRight
-
     }
 }

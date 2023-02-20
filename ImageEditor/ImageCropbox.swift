@@ -8,6 +8,62 @@
 import Foundation
 import UIKit
 
+extension UIImage {
+    var rawSize: CGSize {
+        .init(width: size.width*scale, height: size.height*scale)
+    }
+}
+
+/// calculate cropping operation
+extension CGRect {
+    
+//    func fitForImage(_ image: UIImage) -> CGRect {
+//        let fittedSize = size.fitForImageCropping(image)
+//
+//    }
+    
+    func setSize(_ size: CGSize, for image: UIImage) -> CGRect {
+        let fittedSize = size.fitForImageCropping(image)
+        return fitForExtendsCropSize(fittedSize)
+    }
+    
+    func fitForExtendsCropSize(_ newSize: CGSize) -> CGRect {
+        let diffW = newSize.width - size.width
+        let diffH = newSize.height - size.height
+        let newX = origin.x - diffW/2
+        let newY = origin.y - diffH/2
+        return .init(origin: .init(x: newX, y: newY), size: newSize)
+    }
+}
+
+extension CGSize {
+    
+    /// 保证裁剪框不会比图片大，也不会小于等于0
+    func fitForImageCropping(_ image: UIImage) -> CGSize {
+        let imageSize = image.rawSize
+        var newWidth = self.width > 0 ? self.width : imageSize.width
+        var newHeight = self.height > 0 ? self.height : imageSize.height
+        let ratio = newWidth / newHeight
+        if (newHeight > imageSize.height) {
+            newHeight = imageSize.height
+            newWidth = newHeight * ratio
+        }
+        if (newWidth > imageSize.width) {
+            newWidth = imageSize.width
+            newHeight = newWidth / ratio
+        }
+        return .init(width: newWidth, height: newHeight)
+    }
+}
+
+extension CGPoint {
+    
+    /// 保证裁剪框的位置不会为负
+    func fitForImageCropping(_ image: UIImage) -> CGPoint {
+        .init(x: x > 0 ? x : 0, y: y > 0 ? y : 0)
+    }
+}
+
 struct ImageCropbox {
     
     private(set) var rect: CGRect
