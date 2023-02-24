@@ -7,13 +7,20 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class DemoViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
     }
 
-
+    @IBAction func shareTouched(_ sender: Any) {
+        let shareImage = UIImage(named: "demo.jpg")
+        let items = [shareImage]
+        
+        let activityVC = UIActivityViewController(activityItems: items as [Any], applicationActivities: nil)
+        present(activityVC, animated: true)
+    }
+    
 }
 

@@ -19,7 +19,7 @@ class ImageCropboxViewController: UIViewController {
 
     @IBSegueAction func showPreview(_ coder: NSCoder) -> UIViewController? {
         let vc = ImagePreviewViewController(coder: coder)
-        vc?.image = cropView.image?.cropImage(cropView.cropbox.rect)
+        vc?.image = cropView.image?.cropImage(cropView.cropbox)
         return vc
     }
     

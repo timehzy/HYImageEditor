@@ -12,19 +12,19 @@ class ImageCropView: UIView, CoordinateSpaceConvertable {
     var image: UIImage? {
         didSet {
             imageView.image = image
-            cropbox = ImageCropbox(image: image)
+            cropbox = cropbox.fitForImage(image)
             setNeedsLayout()
         }
     }
     
-    var cropbox: ImageCropbox {
+    var cropbox: CGRect {
         get {
             _cropbox
         }
         set {
             var nextValue = newValue
-            if nextValue == .null && image != nil {
-                nextValue = .init(image: image)
+            if nextValue == .zero && image != nil {
+                nextValue =  newValue.fitForImage(image)
             }
             if nextValue == _cropbox {
                 return
@@ -34,7 +34,7 @@ class ImageCropView: UIView, CoordinateSpaceConvertable {
         }
     }
     
-    var _cropbox: ImageCropbox = .null
+    var _cropbox: CGRect = .zero
     
     var orientation: ImageOrientation = .up {
         didSet {
@@ -44,15 +44,16 @@ class ImageCropView: UIView, CoordinateSpaceConvertable {
     
     var cropboxRatio: CGFloat {
         set {
+            guard let image = image else { return }
             var ratio = newValue
             if ratio == 0 {
-                ratio = imageSize.width/imageSize.height
+                ratio = image.rawSize.width/image.rawSize.height
             }
             if orientation.isHorizontal {
                 ratio = 1/ratio
             }
             let scopeSizeOnImage = convertToImageCoordinateSpace(scopeSize)
-            cropbox.setBoxRatio(ratio, for: scopeSizeOnImage)
+            cropbox.setBoxRatio(ratio, scope: scopeSizeOnImage, for: image)
         }
         get {
             cropbox.ratio
@@ -212,10 +213,11 @@ extension ImageCropView {
     }
     
     func updateZoomScale() {
+        guard let image = image else { return }
         let cropboxViewSize = cropboxViewSizeFitScope
-        let scale = cropbox.rect.width / cropboxViewSize.width
+        let scale = cropbox.width / cropboxViewSize.width
         let imageViewWidth = imageViewSizeFitScope.width
-        scrollView.zoomScale = imageSize.width/scale / imageViewWidth
+        scrollView.zoomScale = image.rawSize.width/scale/imageViewWidth
     }
     
     func updateContentSize() {
@@ -227,7 +229,7 @@ extension ImageCropView {
     }
     
     func updateContentOffset() {
-        let offset = CGPoint(x: cropbox.inset.left, y: cropbox.inset.top)
+        let offset = CGPoint(x: cropbox.inset(of: image).left, y: cropbox.inset(of: image).top)
         scrollView.contentOffset = convertToViewCoordinateSpace(offset)
     }
     
@@ -280,7 +282,7 @@ private extension ImageCropView {
     
     func handlerGestureEnd() {
         let boxRectOnView = cropboxView.convert(cropboxView.boxRect, to: imageView).applying(imageView.transform)
-        cropbox.setBoxRect(convertToImageCoordinateSpace(boxRectOnView))
+        cropbox = boxRectOnView.fitForImage(image)
     }
 }
 
@@ -316,7 +318,8 @@ extension ImageCropView {
     }
     
     var imageViewSizeFitScope: CGSize {
-        sizeFittingScopeWithRatio(imageSize.width / imageSize.height)
+        guard let image = image else { return .zero }
+        return sizeFittingScopeWithRatio(image.rawSize.width / image.rawSize.height)
     }
     
     func sizeFittingScopeWithRatio(_ ratio: CGFloat) -> CGSize {
@@ -335,6 +338,6 @@ extension ImageCropView {
     func updateCropBox() {
         let cropboxSize = convertToImageCoordinateSpace(cropboxViewSizeFitScope)
         let cropboxOrigin = convertToImageCoordinateSpace(scrollView.contentOffset)
-        _cropbox.setBoxRect(.init(origin: cropboxOrigin, size: cropboxSize))
+        _cropbox = CGRect(origin: cropboxOrigin, size: cropboxSize).fitForImage(image)
     }
 }

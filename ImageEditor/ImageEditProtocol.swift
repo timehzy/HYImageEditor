@@ -29,8 +29,7 @@ case up=0, right=90, down=180, left=270
 
 protocol CoordinateSpaceConvertable: UIView {
     var image: UIImage? { get }
-    var imageSize: CGSize { get }
-    var cropbox: ImageCropbox { get }
+    var cropbox: CGRect { get }
     var orientation: ImageOrientation { get }
     var imageToViewScale: CGFloat { get }
     
@@ -47,17 +46,9 @@ protocol CoordinateSpaceConvertable: UIView {
 
 extension CoordinateSpaceConvertable {
     
-    var imageSize: CGSize {
-        guard let image = image else { return .zero }
-        return .init(width: image.size.width*image.scale, height: image.size.height*image.scale)
-    }
-    
     var imageToViewScale: CGFloat {
-        if orientation.isHorizontal {
-            return imageSize.height
-        } else {
-            return imageSize.width / bounds.width
-        }
+        guard let image = image else { return 1 }
+        return (orientation.isHorizontal ? image.rawSize.height : image.rawSize.width) / frame.width
     }
     
     func convertToImageCoordinateSpace(_ length: CGFloat) -> CGFloat {

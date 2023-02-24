@@ -182,10 +182,10 @@
             </objects>
             <point key="canvasLocation" x="-810" y="-18"/>
         </scene>
-        <!--Table View Controller-->
+        <!--Demo View Controller-->
         <scene sceneID="ZAN-FA-9h1">
             <objects>
-                <tableViewController id="oF5-F4-IUj" sceneMemberID="viewController">
+                <tableViewController id="oF5-F4-IUj" customClass="DemoViewController" customModule="ImageEditorSwift" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="1OS-e8-4pZ">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -289,7 +289,13 @@
                             <outlet property="delegate" destination="oF5-F4-IUj" id="uZZ-dt-Liw"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="ZHR-jK-Zum"/>
+                    <navigationItem key="navigationItem" id="ZHR-jK-Zum">
+                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="3Bg-jZ-IEh">
+                            <connections>
+                                <action selector="shareTouched:" destination="oF5-F4-IUj" id="zlQ-mH-ce6"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rR5-4v-5u3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
